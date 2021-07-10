@@ -1,4 +1,5 @@
 #include <iostream>
+#include <QString>
 using std::cout;
 
 // Конструктор по умолчанию =========================================================================================
@@ -96,5 +97,82 @@ public:
     }
     ~Example_3(){
         cout<<"destroy constructor\n";
+    }
+};
+
+
+// Конструктор перемещения =======================================================================================
+
+class UString
+{
+    char *m_Data;
+    uint32_t m_Size;
+public:
+    UString() = default;
+    UString(const char* text)
+    {
+        cout<<"UString Created\n";
+        m_Size = strlen(text);
+        m_Data = new char[m_Size];
+        memcpy(m_Data, text, m_Size);
+    }
+
+    //Используем конструктор копирования
+    UString(const UString& other)
+    {
+        cout<<"UString Copy\n";
+        m_Size = other.m_Size;
+        m_Data = new char[m_Size];
+        memcpy(m_Data, other.m_Data, m_Size);
+    }
+
+    //Используем конструктор перемещения как альтернативу конструктору копирования
+    UString(UString&& other) noexcept
+    {
+        cout<<"UString Move\n";
+        m_Size = other.m_Size;
+        m_Data = other.m_Data;
+
+        other.m_Size = 0;
+        other.m_Data = nullptr;
+
+    }
+
+    ~UString(){
+        cout<<"UString destroyed\n";
+        delete m_Data;
+    }
+
+    void Print(){
+        for (uint32_t i = 0; i < m_Size; ++i) {
+            cout<<m_Data[i];
+        };
+    }
+};
+
+class Entity
+{
+    UString m_Name;
+public:
+    Entity(const UString &name)
+        :m_Name(name)
+    {
+        cout<<"Entity constructor\n";
+    }
+
+    // разблокируйте нужную инициализацию, чтобы выбрать требуемый конструктор
+    Entity(UString &&name)
+        :m_Name((UString&&)name)
+        //:m_Name(name)
+    {
+        cout<<"Entity move constructor\n";
+    }
+
+    ~Entity(){
+        cout<<"Entity destroy\n";
+    }
+
+    void PrintName(){
+        m_Name.Print();
     }
 };

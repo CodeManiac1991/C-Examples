@@ -12,7 +12,8 @@ int main(int argc, char *argv[])
     Example_3 e3(0,0);
     Example_3 e3_1(e3);
 
-    Example_4 e4;
+    Entity ent("Hello move!");
+    ent.PrintName();
 
     return a.exec();
 }
